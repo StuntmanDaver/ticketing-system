@@ -6,7 +6,11 @@ require('dotenv').config();
 
 // Create Express app
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'OPTIONS'],
+  credentials: true
+}));
 
 // Create HTTP server
 const server = http.createServer(app);
@@ -14,8 +18,9 @@ const server = http.createServer(app);
 // Create Socket.io server
 const io = new Server(server, {
   cors: {
-    origin: process.env.CLIENT_URL || '*',
-    methods: ['GET', 'POST']
+    origin: '*',
+    methods: ['GET', 'POST', 'OPTIONS'],
+    credentials: true
   }
 });
 
@@ -95,6 +100,11 @@ app.get('/health', (req, res) => {
     uptime: process.uptime(),
     timestamp: new Date().toISOString()
   });
+});
+
+// Add a root endpoint for testing
+app.get('/', (req, res) => {
+  res.send('Socket.io server is running!');
 });
 
 // Start the server
